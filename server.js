@@ -23,3 +23,13 @@ var router = express.Router();
 router.get('/', (req, res) => {
 	res.json({ message: 'Pee is stored in the balls'});
 });
+
+// -----------------------------------------------------------------------------
+// Register routes
+// all of our routes will be prefixed with /api
+app.use('/api', router);
+
+// -----------------------------------------------------------------------------
+// Start
+app.listen(port);
+console.log('Magic happens on port ' + port);
