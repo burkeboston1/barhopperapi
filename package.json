@@ -1,0 +1,22 @@
+{
+  "name": "barhopperapi",
+  "version": "1.0.0",
+  "description": "REST API that serves BarHopper web and mobile apps",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/burkeboston1/barhopperapi.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/burkeboston1/barhopperapi/issues"
+  },
+  "homepage": "https://github.com/burkeboston1/barhopperapi#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
