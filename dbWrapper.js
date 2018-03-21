@@ -11,15 +11,25 @@
 var mongoose = require('mongoose');
 
 // mongoose models for our BarHopper entities
-var Patron = require('./BarHopperDBModels/patron');
-var Bar = require('./BarHopperDBModels/bar');
-var Promotion = require('./BarHopperDBModels/promotion');
+var Patron = require('./schemas/patron');
+var Bar = require('./schemas/bar');
+var Promotion = require('./schemas/promotion');
 
 // BarHopper MongoDB cluster hosted by mlab
 var barHopperMongoClusterUrl = // TODO use local .env file for MONGO_URI
   'mongodb://barhopperdbadmin:loluva140@ds121686.mlab.com:21686/barhopperdb';
 
-mongoose.connect(barHopperMongoClusterUrl);
+mongoose.connect(barHopperMongoClusterUrl).then(
+    () => {
+        /* ready to use */
+        console.log('DB connection alive')
+    },
+    err => { /* handle connection error */}
+);
+
+function getBarById(barId) {
+
+}
 
 // BEGIN: Database Operations ---------------- //
 
@@ -27,3 +37,7 @@ mongoose.connect(barHopperMongoClusterUrl);
 
 
 // END: Database Operations ------------------ //
+
+module.exports = {
+    'getBarById' : getBarById
+};

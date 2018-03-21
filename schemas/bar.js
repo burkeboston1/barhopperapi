@@ -18,8 +18,7 @@ var barSchema   = new Schema({
     emailAddress: { type: String, unique: true },
     location: {
         type: { type: String },
-        coordinates: [Number],
-        required: true,
+        coordinates: [Number]
     }
 });
 

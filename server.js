@@ -13,6 +13,7 @@ var express    = require('express');
 var app		   = express();
 var path 	   = require('path');
 var bodyParser = require('body-parser');
+var dbWrapper  = require('./dbWrapper');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -20,7 +21,6 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;
 
 var router = express.Router();
-
 
 // -----------------------------------------------------------------------------
 // Routes
