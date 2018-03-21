@@ -1,6 +1,10 @@
 /**
- * DB model for Patrons
+ * patron.js
  *
+ * Mongoose schema definition for patrons
+ *
+ * BarHopper API
+ * Will Campbell
  */
 
 var mongoose     = require('mongoose');

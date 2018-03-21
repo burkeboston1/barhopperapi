@@ -1,4 +1,6 @@
 /**
+ * dbWrapper.js
+ *
  * Functions for interacting with BarHopper MongoDB
  * cluster using mongoose to facilitate object modeling.
  *

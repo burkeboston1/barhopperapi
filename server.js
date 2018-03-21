@@ -1,6 +1,8 @@
 /**
  * server.js
  *
+ * Main server file for the BarHopper API
+ *
  * BarHopper API
  * Boston Burke, Will Campbell
  */
@@ -25,7 +27,7 @@ var router = express.Router();
 
 // Base route
 router.get('/', (req, res) => {
-	res.status(200).json({message: 'Welcome to the BarHopper API'})
+	res.status(200).json({message: 'Welcome to the BarHopper API'});
 });
 
 

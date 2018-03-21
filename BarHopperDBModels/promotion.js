@@ -1,6 +1,10 @@
 /**
- * DB model for Promotions
+ * promotion.js
  *
+ * Mongoose schema definition for promotions
+ *
+ * BarHopper API
+ * Will Campbell
  */
 
 var mongoose     = require('mongoose');

@@ -1,6 +1,10 @@
 /**
- * DB model for Bars
+ * bar.js
  *
+ * Mongoose schema definition for bars
+ *
+ * BarHopper API
+ * Will Campbell
  */
 
 var mongoose     = require('mongoose');
