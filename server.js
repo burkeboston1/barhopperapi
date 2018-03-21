@@ -19,15 +19,21 @@ var port = process.env.PORT || 8080;
 
 var router = express.Router();
 
-// Hello World route
+
+// -----------------------------------------------------------------------------
+// Routes
+
+// Base route
 router.get('/', (req, res) => {
-	res.json({ message: 'Pee is stored in the balls'});
+	res.status(200).json({message: 'Welcome to the BarHopper API'})
 });
+
 
 // -----------------------------------------------------------------------------
 // Register routes
 // all of our routes will be prefixed with /api
 app.use('/api', router);
+
 
 // -----------------------------------------------------------------------------
 // Start
