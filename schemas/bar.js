@@ -11,11 +11,10 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var barSchema   = new Schema({
-    adminUserName: String,
     name: String,
-    address: { type: String, unique: true },
+    address: { type: String },
     phoneNumber: { type: String, unique: true },
-    emailAddress: { type: String, unique: true },
+    email: { type: String, unique: true },
     location: {
         type: { type: String },
         coordinates: [Number]
