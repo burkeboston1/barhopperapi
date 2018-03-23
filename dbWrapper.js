@@ -27,8 +27,9 @@ mongoose.connect(barHopperMongoClusterUrl).then(
     err => { /* handle connection error */}
 );
 
-function userSignUp(userInfo) {
+function userSignUp(userInfo, callback) {
   var newUser = User({
+    name: userInfo.name,
     email: userInfo.email,
     password: userInfo.password,
     admin: userInfo.admin,
@@ -36,12 +37,7 @@ function userSignUp(userInfo) {
     bar_id: null,
   });
 
-  if (userInfo.admin) { // Map a new bar admin user to a bar
-    var newBar = Bar({
-
-    });
-  }
-  else { // Create a new patron account to map to the new user
+  if (!userInfo.admin) { // Create a new patron account to map to the new user
     var newPatron = Patron({
       upvotes: [],
       barSubscriptions: [],
@@ -49,12 +45,21 @@ function userSignUp(userInfo) {
     });
     newPatron.save(function(err, patron){
       if (err) {
-        console.log('Failed to save new patron to the DB.')
+        console.log('Failed to write new patron to DB.\n' + err);
+        callback(null);
+        return;
       }
       newUser.patron_id = patron._id;
-      console.log(newUser);
+      newUser.save(function(err, user){
+        if(err) {
+          console.log('Failed to write new user to DB.\n' + err);
+          callback(null);
+          return;
+        }
+        callback(user);
+      });
     });
-  }
+  } // end if
 }
 
 function authenticateUser(userInfo) {
