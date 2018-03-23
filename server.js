@@ -33,8 +33,18 @@ router.get('/', (req, res) => {
 
 // Signup new patron or
 router.post('/signup', (req, res) => {
-	console.log(req.body);
-	res.status(200).json({message: 'Signup route hit'});
+	dbWrapper.userSignUp(req.body, (user) => {
+		if (!user) {
+			res.status(400).json({success: false, message: 'Email already in use'});
+		}
+		const payload = {
+			user_id: user.id
+		};
+		var token = jwt.sign(payload, process.env.SECRET), {
+			expiresIn: 1440 // expires in 24 hours
+		});
+		res.status(201).json({success: true, message: 'User created', token: token});
+	});
 })
 
 
