@@ -31,10 +31,9 @@ router.get('/', (req, res) => {
 	res.status(200).json({message: 'Welcome to the BarHopper API'});
 });
 
-// Signup new patron or
+// Signup new patron or bar manager
 router.post('/signup', (req, res) => {
 	req.body.admin = req.body.admin == "true";
-	console.log(req.body.admin)
 	dbWrapper.userSignUp(req.body, (user) => {
 		if (!user) {
 			res.status(400).json({success: false, message: 'Email already in use'});
@@ -49,9 +48,23 @@ router.post('/signup', (req, res) => {
 	});
 })
 
-
+// Sign in as patron or bar manager
 router.post('/authenticate', (req, res) => {
-	
+	dbWrapper.userSignIn(req.body, (user) => {
+		if (!user) {
+			res.status(400).json({success: false, message: 'Email does not exist'});
+		}
+		if (req.body.password != user.password) {
+			res.status(400).json({success: false, message: 'Password does not match'});
+		}
+		const payload = {
+			user_id: user._id
+		};
+		var token = jwt.sign(payload, process.env.SECRET, {
+			expiresIn: 1440 // expires in 24 hours
+		});
+		res.status(201).json({success: true, message: 'User signed in', token: token});
+	})
 });
 
 
