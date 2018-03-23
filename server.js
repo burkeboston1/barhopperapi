@@ -31,6 +31,18 @@ router.get('/', (req, res) => {
 	res.status(200).json({message: 'Welcome to the BarHopper API'});
 });
 
+// Signup new patron or
+router.post('/signup', (req, res) => {
+	console.log(req.body);
+	res.status(200).json({message: 'Signup route hit'});
+})
+
+
+router.post('/authenticate', (req, res) => {
+
+})
+
+
 
 // -----------------------------------------------------------------------------
 // Register routes
