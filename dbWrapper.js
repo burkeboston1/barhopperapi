@@ -16,8 +16,7 @@ var Bar = require('./schemas/bar');
 var Promotion = require('./schemas/promotion');
 
 // BarHopper MongoDB cluster hosted by mlab
-var barHopperMongoClusterUrl = // TODO use local .env file for MONGO_URI
-  'mongodb://barhopperdbadmin:loluva140@ds121686.mlab.com:21686/barhopperdb';
+var barHopperMongoClusterUrl = process.env.MONGODB_URI;
 
 mongoose.connect(barHopperMongoClusterUrl).then(
     () => {
