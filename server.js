@@ -9,17 +9,18 @@
 
 // -----------------------------------------------------------------------------
 // Config
+require('dotenv').config();
 var express    = require('express');
 var app		   = express();
 var path 	   = require('path');
 var bodyParser = require('body-parser');
 var dbWrapper  = require('./dbWrapper');
+var jwt    	   = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;
-
 var router = express.Router();
 
 // -----------------------------------------------------------------------------
