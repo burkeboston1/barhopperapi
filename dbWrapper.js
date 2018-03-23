@@ -11,6 +11,7 @@
 var mongoose = require('mongoose');
 
 // mongoose models for our BarHopper entities
+var User = require('./schemas/user');
 var Patron = require('./schemas/patron');
 var Bar = require('./schemas/bar');
 var Promotion = require('./schemas/promotion');
@@ -26,7 +27,37 @@ mongoose.connect(barHopperMongoClusterUrl).then(
     err => { /* handle connection error */}
 );
 
-function getBarById(barId) {
+function userSignUp(userInfo) {
+  var newUser = User({
+    email: userInfo.email,
+    password: userInfo.password,
+    admin: userInfo.admin,
+    patron_id: null,
+    bar_id: null,
+  });
+
+  if (userInfo.admin) { // Map a new bar admin user to a bar
+    var newBar = Bar({
+
+    });
+  }
+  else { // Create a new patron account to map to the new user
+    var newPatron = Patron({
+      upvotes: [],
+      barSubscriptions: [],
+      promotionSubscriptions: [],
+    });
+    newPatron.save(function(err, patron){
+      if (err) {
+        console.log('Failed to save new patron to the DB.')
+      }
+      newUser.patron_id = patron._id;
+      console.log(newUser);
+    });
+  }
+}
+
+function authenticateUser(userInfo) {
 
 }
 
@@ -38,5 +69,5 @@ function getBarById(barId) {
 // END: Database Operations ------------------ //
 
 module.exports = {
-    'getBarById' : getBarById
+    'userSignUp' : userSignUp,
 };
