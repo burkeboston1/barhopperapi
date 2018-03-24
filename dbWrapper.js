@@ -73,7 +73,10 @@ function createUser(userInfo, callback) {
                 callback(user);
             });
         });
-    } // end if
+    } else {
+        // user is a bar manager
+        
+    }
 }
 
 /**

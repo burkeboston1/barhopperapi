@@ -46,7 +46,8 @@ router.post('/signup', (req, res) => {
 				message: 'Sign up failed. Email already in use.'});
 		}
 		const payload = {
-			user_id: user._id
+			user_id: user._id,
+			admin: req.body.admin
 		};
 		var token = jwt.sign(payload, process.env.SECRET, {
 			expiresIn: 1440 // expires in 24 hours
@@ -76,7 +77,8 @@ router.post('/authenticate', (req, res) => {
 				message: 'Authentication failed. Wrong password.'});
 		}
 		const payload = {
-			user_id: user._id
+			user_id: user._id,
+			admin: req.body.admin
 		};
 		var token = jwt.sign(payload, process.env.SECRET, {
 			expiresIn: 1440 // expires in 24 hours
@@ -101,7 +103,7 @@ router.use((req, res, next) => {
 	// decode token
   	if (token) {
 	    // verify secret and checks exp
-	    jwt.verify(token, app.get('superSecret'), function(err, decoded) {
+	    jwt.verify(token, process.env.SECRET, function(err, decoded) {
 	     	if (err) {
 	        	return res.json({ success: false, message: 'Failed to authenticate token.' });
 	      	} else {
@@ -112,9 +114,10 @@ router.use((req, res, next) => {
 	    });
   	} else {
 	    // return error if no token found in req
-	    return res.status(403).send({success: false, message: 'No token provided.'});
+	    return res.status(403).json({success: false, message: 'No token provided.'});
   	}
 });
+
 
 
 
