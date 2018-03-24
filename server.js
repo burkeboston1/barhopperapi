@@ -120,9 +120,6 @@ router.use((req, res, next) => {
 });
 
 
-
-
-
 // -----------------------------------------------------------------------------
 // Register routes (prefix all with /api) and Start
 app.use('/api', router);
