@@ -38,13 +38,11 @@ function userSignUp(userInfo, callback) {
   });
 
   if (!userInfo.admin) { // Create a new patron account to map to the new user
-
     var newPatron = Patron({
       upvotes: [],
       barSubscriptions: [],
       promotionSubscriptions: [],
     });
-
     newPatron.save(function(err, patron){
       if (err) {
         console.log('Failed to write new patron to DB.\n' + err);
@@ -65,8 +63,14 @@ function userSignUp(userInfo, callback) {
   } // end if
 }
 
-function authenticateUser(userInfo) {
-
+function userSignIn(userInfo) {
+    User.findOne({ 'email': userInfo.email }, 'email', function (err, user) {
+        if (err) {
+            callback(null);
+            return;
+        }
+        callback(user);
+    });
 }
 
 // BEGIN: Database Operations ---------------- //
