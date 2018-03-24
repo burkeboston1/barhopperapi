@@ -14,8 +14,9 @@ var express    = require('express');
 var app		   = express();
 var path 	   = require('path');
 var bodyParser = require('body-parser');
-var dbWrapper  = require('./dbWrapper');
+var dbWrapper  = require('./dbWrapper');  // database helper file
 var jwt    	   = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var hash 	   = require('password-hash'); // for verifying passwords
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -71,7 +72,7 @@ router.post('/authenticate', (req, res) => {
 				success: false,
 				message: 'Authentication failed. User not found.'});
 		}
-		if (req.body.password != user.password) {
+		if (!hash.verify(req.body.password, user.password)) {
 			res.status(400).json({
 				success: false,
 				message: 'Authentication failed. Wrong password.'});

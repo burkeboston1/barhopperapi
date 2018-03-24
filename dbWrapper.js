@@ -8,12 +8,14 @@
  * Boston Burke, Will Campbell
  */
 
+// Packages
 var mongoose = require('mongoose');
+var hash 	 = require('password-hash'); // for generating password hashes
 
 // Mongoose models for our BarHopper entities
-var User = require('./schemas/user');
-var Patron = require('./schemas/patron');
-var Bar = require('./schemas/bar');
+var User      = require('./schemas/user');
+var Patron    = require('./schemas/patron');
+var Bar       = require('./schemas/bar');
 var Promotion = require('./schemas/promotion');
 
 // BarHopper MongoDB cluster hosted by mlab
@@ -41,7 +43,7 @@ function createUser(userInfo, callback) {
     var newUser = User({
         name: userInfo.name,
         email: userInfo.email,
-        password: userInfo.password,
+        password: hash.generate(userInfo.password),
         admin: userInfo.admin,
         patron_id: null,
         bar_id: null,
@@ -75,7 +77,7 @@ function createUser(userInfo, callback) {
         });
     } else {
         // user is a bar manager
-        
+
     }
 }
 
