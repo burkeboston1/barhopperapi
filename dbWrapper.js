@@ -63,8 +63,8 @@ function userSignUp(userInfo, callback) {
   } // end if
 }
 
-function userSignIn(userInfo) {
-    User.findOne({ 'email': userInfo.email }, 'email', function (err, user) {
+function userSignIn(userInfo, callback) {
+    User.findOne({ 'email': userInfo.email }, function (err, user) {
         if (err) {
             callback(null);
             return;
@@ -82,4 +82,5 @@ function userSignIn(userInfo) {
 
 module.exports = {
     'userSignUp' : userSignUp,
+    'userSignIn': userSignIn
 };

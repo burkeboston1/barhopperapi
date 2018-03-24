@@ -63,9 +63,12 @@ router.post('/authenticate', (req, res) => {
 		var token = jwt.sign(payload, process.env.SECRET, {
 			expiresIn: 1440 // expires in 24 hours
 		});
-		res.status(201).json({success: true, message: 'User signed in', token: token});
+		res.status(200).json({success: true, message: 'User signed in', token: token});
 	})
 });
+
+// Sign out as patron or bar manager
+
 
 
 
