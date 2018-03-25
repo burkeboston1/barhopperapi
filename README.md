@@ -32,3 +32,7 @@ On success, the API will return the following:
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWFiNmM5OGMyNGNhN2MxNDUwNzVhMTEyIiwiYWRtaW4iOnRydWUsImlhdCI6MTUyMTkyODU4OCwiZXhwIjoxNTIxOTMwMDI4fQ.FywqmGeS6hiXIUrC9i0fDHSBNDqLUd3gordPT9uTRYs"
 }
 ```
+
+User apps will need to save this token for as long as the user is signed-in. For any protected routes you hit, you will need to set the `x-access-token` field in the header to this token. 
+
+When the user signs out, simply delete the token from memeory on the client-side. 
