@@ -65,18 +65,29 @@ function createUser(userInfo, callback) {
 
             // set patron_id field in user object
             newUser.patron_id = patron._id;
+
+            // save the user
+            newUser.save(function(err, user){
+                if(err) {
+                    console.log('Failed to write new user to DB.\n' + err);
+                    callback(null);
+                    return;
+                }
+                callback(user);
+            });
+        });
+    } else {
+
+        // save the user
+        newUser.save(function(err, user){
+            if(err) {
+                console.log('Failed to write new user to DB.\n' + err);
+                callback(null);
+                return;
+            }
+            callback(user);
         });
     }
-
-    // save the user
-    newUser.save(function(err, user){
-        if(err) {
-            console.log('Failed to write new user to DB.\n' + err);
-            callback(null);
-            return;
-        }
-        callback(user);
-    });
 }
 
 /**
