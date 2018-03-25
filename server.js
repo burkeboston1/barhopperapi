@@ -136,6 +136,7 @@ router.use((req, res, next) => {
 	 if (!req.decoded.admin) {
 		 res.status(403).json({success: false, message: 'User not authorized to create bar.'});
 	 }
+	 // TODO: verify that bar manager is associated with bar they are trying to create
 	 dbWrapper.createBar(req.body, (bar, err) => {
 		 if (!bar) {
 			 // TODO: handle different errors
