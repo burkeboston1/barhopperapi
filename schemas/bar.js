@@ -13,7 +13,7 @@ var Schema       = mongoose.Schema;
 var barSchema   = new Schema({
     name: String,
     address: { type: String },
-    phoneNumber: { type: String, unique: true },
+    phone: { type: String, unique: true },
     email: { type: String, unique: true },
     location: {
         type: { type: String },

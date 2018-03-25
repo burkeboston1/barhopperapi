@@ -48,14 +48,17 @@ router.post('/signup', (req, res) => {
 		}
 		const payload = {
 			user_id: user._id,
-			admin: req.body.admin
+			admin: user.admin
 		};
 		var token = jwt.sign(payload, process.env.SECRET, {
 			expiresIn: 1440 // expires in 24 hours
 		});
+		var desc_id = user.admin ? user.bar_id : user.patron_id // reference to corresponding patron/bar
 		res.status(201).json({
 			success: true,
-			message: 'User created. Here\'s a token.', token: token});
+			message: 'User created. Here\'s a token.',
+			token: token,
+			desc_id : desc_id});
 	});
 })
 
@@ -79,14 +82,17 @@ router.post('/authenticate', (req, res) => {
 		}
 		const payload = {
 			user_id: user._id,
-			admin: req.body.admin
+			admin: user.admin
 		};
 		var token = jwt.sign(payload, process.env.SECRET, {
 			expiresIn: 1440 // expires in 24 hours
 		});
+		var desc_id = user.admin ? user.bar_id : user.patron_id // reference to corresponding patron/bar
 		res.status(200).json({
 			success: true,
-			message: 'User signed in. Here\'s a token.', token: token});
+			message: 'User signed in. Here\'s a token.',
+			token: token,
+			desc_id: desc_id});
 	})
 });
 
@@ -118,6 +124,26 @@ router.use((req, res, next) => {
 	    return res.status(403).json({success: false, message: 'No token provided.'});
   	}
 });
+
+/**
+ * /api/newbar
+ *
+ * Create new bar with info in req.body and map to user found in token payload.
+ */
+ router.post('/newbar', (req, res) => {
+	 // check that user is admin
+	 console.log(req.decoded);
+	 if (!req.decoded.admin) {
+		 res.status(403).json({success: false, message: 'User not authorized to create bar.'});
+	 }
+	 dbWrapper.createBar(req.body, (bar, err) => {
+		 if (!bar) {
+			 // TODO: handle different errors
+			 res.status(400).json({success: false, message: 'Failed to create bar.'});
+		 }
+		 res.status(201).json({success: true, message: 'Bar created.', bar_id: bar._id});
+	 });
+ })
 
 
 // -----------------------------------------------------------------------------
