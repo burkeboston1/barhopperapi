@@ -6,7 +6,7 @@ The base URL for our API is `https://barhopperapi.herokuapp.com/api`
 
 ## Features
 
-*Signup & Login*
+*Signup*
 
 Sign users up by sending a POST request to `https://barhopperapi.herokuapp.com/api/signup`.
 
@@ -37,3 +37,10 @@ On success, the API will return the following:
 User apps will need to save this token for as long as the user is signed-in. For any protected routes you hit, you will need to set the `x-access-token` field in the header to this token. 
 
 When the user signs out, simply delete the token from memeory on the client-side. 
+
+
+*Login*
+
+To implement user login, send a POST request `https://barhopperapi.herokuapp.com/api/authenticate` with the email and password in the request body. You'll get the same response from the API as sign up but with the message `User signed in. Here's a token.`. 
+
+
