@@ -17,6 +17,7 @@ var bodyParser = require('body-parser');
 var dbWrapper  = require('./dbWrapper');  // database helper file
 var jwt    	   = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var hash 	   = require('password-hash'); // for verifying passwords
+var cors	   = require('cors');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -24,8 +25,20 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;
 var router = express.Router();
 
+app.use(cors());
+app.options('*', cors());
 // -----------------------------------------------------------------------------
 // Routes
+
+/**
+ * Middleware to allow cross origin requests.
+ */
+router.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, content-type, Accept');
+	res.header('Access-Control-Allow-Methods', 'GET, POST');
+	next();
+})
 
 // Base route
 router.get('/', (req, res) => {
