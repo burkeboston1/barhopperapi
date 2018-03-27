@@ -98,42 +98,21 @@ function createUser(userInfo, callback) {
 */
 function createBar(barInfo, callback) {
     // get coordinates from address if not already provided
-    if (!barInfo.location) {
-        var maps_url = 'https://maps.googleapis.com/maps/api/geocode/json?key='
-            + process.env.MAPS_API_KEY          // Google Maps API key
-            + '&address=' + barInfo.address;     // address
-        httpGetAsync(maps_url, function(res) {
-            // get the coordinates from the first result
-            res = JSON.parse(res);
-            var newBar = new Bar({
-                name: barInfo.name,
-                email: barInfo.email,
-                address: barInfo.address,
-                phone: barInfo.phone,
-                location: {
-                    type: 'Point',
-                    coordinates: [res.results[0].geometry.location.lng, res.results[0].geometry.location.lat]
-                }
-            });
-
-            // save bar in db
-            newBar.save(function(err, bar) {
-                if (err) {
-                    console.log('Failed to create bar.\n' + err);
-                    callback(null);
-                    return;
-                }
-                callback(bar);
-            });
-        });
-    } else {
-        // coordinates were included
+    var maps_url = 'https://maps.googleapis.com/maps/api/geocode/json?key='
+        + process.env.MAPS_API_KEY          // Google Maps API key
+        + '&address=' + barInfo.address;     // address
+    httpGetAsync(maps_url, function(res) {
+        // get the coordinates from the first result
+        res = JSON.parse(res);
         var newBar = new Bar({
             name: barInfo.name,
             email: barInfo.email,
             address: barInfo.address,
             phone: barInfo.phone,
-            location: {coordinates: [barInfo.lng, barInfo.lat]}
+            location: {
+                type: 'Point',
+                coordinates: [res.results[0].geometry.location.lng, res.results[0].geometry.location.lat]
+            }
         });
 
         // save bar in db
@@ -145,7 +124,7 @@ function createBar(barInfo, callback) {
             }
             callback(bar);
         });
-    }
+    });
 }
 
 /**

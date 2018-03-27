@@ -13,11 +13,11 @@ var Schema       = mongoose.Schema;
 var barSchema   = new Schema({
     name: String,
     address: { type: String },
-    phone: { type: String, unique: true },
-    email: { type: String, unique: true },
+    phone: { type: String },
+    email: { type: String },
     location: {
         type: { type: String },
-        coordinates: [Number]
+        coordinates: [Number] 
     }
 });
 
