@@ -151,15 +151,36 @@ router.use((req, res, next) => {
 		 res.status(403).json({success: false, message: 'User not authorized to create bar.'});
 	 } else {
 		 // TODO: verify that bar manager is associated with bar they are trying to create
-		 dbWrapper.createBar(req.body, (bar, err) => {
+		 dbWrapper.createBar(req.body, req.decoded.user_id, (bar, err) => {
 			 if (!bar) {
 				 // TODO: handle different errors
 				 res.status(400).json({success: false, message: 'Failed to create bar.'});
-			 }
-			 res.status(201).json({success: true, message: 'Bar created.', bar_id: bar._id});
+			 } else {
+			 	 res.status(201).json({success: true, message: 'Bar created.', bar_id: bar._id});
+		 	 }
 		 });
  	}
  })
+
+
+ /**
+  * /api/newpromo
+  *
+  * Create new promotion with info in req.body.
+  */
+ router.post('/newpromo', (req, res) =>{
+	 if (!req.decoded.admin) {
+		 res.status(403).json({success: false, message: 'User not authorized to create promotion.'});
+	 } else {
+		 dbWrapper.createPromotion(req.body, req.body.bar_id, (promo) => {
+			 if (!promo) {
+				 res.status(400).json({success: false, message: 'Failed to create promotion.'});
+			 } else {
+				 res.status(201).json({success: true, message: 'Promotion created.', promo_id: promo._id});
+			 }
+		 });
+	 }
+ });
 
 
 // -----------------------------------------------------------------------------
