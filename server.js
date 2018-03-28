@@ -27,8 +27,9 @@ var router = express.Router();
 
 app.use(cors());
 app.options('*', cors());
+
 // -----------------------------------------------------------------------------
-// Routes
+// Open Routes
 
 /**
  * Middleware to allow cross origin requests.
@@ -40,7 +41,11 @@ router.use((req, res, next) => {
 	next();
 })
 
-// Base route
+/**
+ * /api/
+ *
+ * Just the welcome route.
+ */
 router.get('/', (req, res) => {
 	res.status(200).json({message: 'Welcome to the BarHopper API'});
 });
@@ -110,6 +115,22 @@ router.post('/authenticate', (req, res) => {
 	})
 });
 
+/**
+ * /api/promotions/:location
+ *
+ * Gets all promotions within a radius around the given location ([lng, lat]).
+ */
+router.get('/promotions/:location', (req, res) => {
+	var coords = JSON.parse(req.params.location);
+	dbWrapper.findPromotionsByLocation(coords, (promos) => {
+		res.status(200).json({success: true,
+			message: 'Here\'s some promotions',
+			results: promos});
+	});
+});
+
+// -----------------------------------------------------------------------------
+// Protected Routes
 
 /**
  * Middleware to protect subsequent routes.
@@ -144,7 +165,7 @@ router.use((req, res, next) => {
  *
  * Create new bar with info in req.body and map to user found in token payload.
  */
- router.post('/newbar', (req, res) => {
+router.post('/newbar', (req, res) => {
 	 // check that user is admin
 	 console.log(req.decoded);
 	 if (!req.decoded.admin) {
@@ -162,25 +183,26 @@ router.use((req, res, next) => {
  	}
  })
 
-
- /**
-  * /api/newpromo
-  *
-  * Create new promotion with info in req.body.
-  */
- router.post('/newpromo', (req, res) =>{
-	 if (!req.decoded.admin) {
-		 res.status(403).json({success: false, message: 'User not authorized to create promotion.'});
-	 } else {
-		 dbWrapper.createPromotion(req.body, req.body.bar_id, (promo) => {
-			 if (!promo) {
-				 res.status(400).json({success: false, message: 'Failed to create promotion.'});
-			 } else {
-				 res.status(201).json({success: true, message: 'Promotion created.', promo_id: promo._id});
-			 }
+/**
+* /api/newpromo
+*
+* Create new promotion with info in req.body.
+*/
+router.post('/newpromo', (req, res) =>{
+	if (!req.decoded.admin) {
+		res.status(403).json({success: false, message: 'User not authorized to create promotion.'});
+	} else {
+		dbWrapper.createPromotion(req.body, req.body.bar_id, (promo) => {
+			if (!promo) {
+				res.status(400).json({success: false, message: 'Failed to create promotion.'});
+			} else {
+				res.status(201).json({success: true, message: 'Promotion created.', promo_id: promo._id});
+			}
 		 });
-	 }
- });
+ 	}
+});
+
+
 
 
 // -----------------------------------------------------------------------------
