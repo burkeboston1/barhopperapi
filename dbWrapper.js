@@ -147,11 +147,74 @@ function findUserByEmail(email, callback) {
     });
 }
 
+/**
+* createPromotion()
+*
+* Creates a new promotion in the database with the info provided by the client.
+*/
+function createPromotion(promoInfo, bar_id, callback) {
+    // fill in promotion data with info supplied by client
+    var newPromotion = new Promotion({
+        name: promoInfo.name,
+        description: promoInfo.description,
+        bar_id: bar_id,
+        upvotes: 0,
+        startDate: new Date(promoInfo.startDate),
+        endDate: new Date(promoInfo.endDate),
+        location: {
+            type: 'Point',
+            coordinates: null,
+        }
+    });
+    // find the associated bar so that promo's location can be set
+    Bar.findOne({ '_id': bar_id }, function (err, bar) {
+        if (err) {
+            console.log('Error retrieving bar\'s location.');
+            callback(null);
+            return;
+        }
+        newPromotion.location.coordinates = bar.location.coordinates;
+        // save new promotion to database
+        newPromotion.save(function(err, promo) {
+            if (err) {
+                console.log('Failed to create new promotion.\n' + err);
+                callback(null);
+                return;
+            }
+            // return the successfully created promotion
+            callback(newPromotion);
+        });
+    });
+}
+
+/**
+* findPromotionsByLocation()
+*
+* Uses MongoDB Geonear functionality to find promotions near a given location.
+*/
+function findPromotionsByLocation(loc, callback) {
+    var geoJSON = {
+        type: 'Point',
+        coordinates: loc
+    };
+    var options = {
+        spherical: true,
+        maxDistance: 1600
+    };
+    Promotion.geoNear(geoJSON, options, function(err, data, stats) {
+        if (err) {
+            console.log('Error retrieving promotions.');
+            callback(null);
+            return;
+        }
+        console.log(data);
+        callback(data);        
+    });
+}
 
 // -----------------------------------------------------------------------------
 // Helper methods for this file
-function httpGetAsync(theUrl, callback)
-{
+function httpGetAsync(theUrl, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
@@ -168,5 +231,6 @@ function httpGetAsync(theUrl, callback)
 module.exports = {
     'createBar' : createBar,
     'createUser' : createUser,
+    'createPromotion' : createPromotion,
     'findUserByEmail': findUserByEmail
 };
