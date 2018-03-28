@@ -58,5 +58,67 @@ The location should be of the form `[<longitude>, <latitude>]`. Returns a JSON o
 Example response: 
 
 ```
-
+{
+    "success": true,
+    "message": "Here's some promotions",
+    "results": [
+        {
+            "location": {
+                "coordinates": [
+                    -80.41944889999999,
+                    37.2346131
+                ],
+                "type": "Point"
+            },
+            "upvotes": 0,
+            "_id": "5abc0c8114abf60d30b7b03b",
+            "name": "Happy Hour",
+            "description": "$2 off all doubles",
+            "bar_id": "5abbf30dbc00c82e881b98cc",
+            "barName": "622 North Main",
+            "barAddress": "622 North Main Street, Blacksburg, VA 24060",
+            "startDate": "2018-03-28T04:00:00.000Z",
+            "endDate": "2018-03-30T04:00:00.000Z",
+            "__v": 0
+        },
+        {
+            "location": {
+                "coordinates": [
+                    -80.4138621,
+                    37.2289497
+                ],
+                "type": "Point"
+            },
+            "upvotes": 0,
+            "_id": "5abc14cf5589e64d84e3b02b",
+            "name": "I like BOOZE",
+            "description": "booze plz",
+            "bar_id": "5abc14475589e64d84e3b02a",
+            "barName": "UNDERGROUND BRAH",
+            "barAddress": "120 North Main Street, Blacksburg, VA 24060",
+            "startDate": "2018-03-28T04:00:00.000Z",
+            "endDate": "2018-03-30T04:00:00.000Z",
+            "__v": 0
+        },
+        {
+            "location": {
+                "coordinates": [
+                    -80.4138621,
+                    37.2289497
+                ],
+                "type": "Point"
+            },
+            "upvotes": 0,
+            "_id": "5abc14e55589e64d84e3b02c",
+            "name": "Some promotion",
+            "description": "Spend money here",
+            "bar_id": "5abc14475589e64d84e3b02a",
+            "barName": "UNDERGROUND BRAH",
+            "barAddress": "120 North Main Street, Blacksburg, VA 24060",
+            "startDate": "2018-03-28T04:00:00.000Z",
+            "endDate": "2018-03-30T04:00:00.000Z",
+            "__v": 0
+        }
+    ]
+}
 ```
