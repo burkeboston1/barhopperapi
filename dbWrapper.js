@@ -201,7 +201,6 @@ function findPromotionsByLocation(loc, callback) {
                      callback(null);
                      return;
                  }
-                 console.log(promos);
                  callback(promos);
              });
 }
