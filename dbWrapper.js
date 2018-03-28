@@ -193,23 +193,17 @@ function createPromotion(promoInfo, bar_id, callback) {
 * Uses MongoDB Geonear functionality to find promotions near a given location.
 */
 function findPromotionsByLocation(loc, callback) {
-    var geoJSON = {
-        type: 'Point',
-        coordinates: loc
-    };
-    var options = {
-        spherical: true,
-        maxDistance: 1600
-    };
-    Promotion.geoNear(geoJSON, options, function(err, data, stats) {
-        if (err) {
-            console.log('Error retrieving promotions.');
-            callback(null);
-            return;
-        }
-        console.log(data);
-        callback(data);        
-    });
+    Promotion.where('location')
+             .near({ center: { type: 'Point', coordinates: loc }, maxDistance: 1000, spherical: true })
+             .exec(function(err, promos) {
+                 if (err) {
+                     console.log('Error retrieving promotions.');
+                     callback(null);
+                     return;
+                 }
+                 console.log(promos);
+                 callback(promos);
+             });
 }
 
 // -----------------------------------------------------------------------------
@@ -232,5 +226,6 @@ module.exports = {
     'createBar' : createBar,
     'createUser' : createUser,
     'createPromotion' : createPromotion,
-    'findUserByEmail': findUserByEmail
+    'findUserByEmail': findUserByEmail,
+    'findPromotionsByLocation' : findPromotionsByLocation,
 };
