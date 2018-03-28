@@ -158,6 +158,8 @@ function createPromotion(promoInfo, bar_id, callback) {
         name: promoInfo.name,
         description: promoInfo.description,
         bar_id: bar_id,
+        barName: null,
+        barAddress: null,
         upvotes: 0,
         startDate: new Date(promoInfo.startDate),
         endDate: new Date(promoInfo.endDate),
@@ -174,6 +176,8 @@ function createPromotion(promoInfo, bar_id, callback) {
             return;
         }
         newPromotion.location.coordinates = bar.location.coordinates;
+        newPromotion.barName = bar.name;
+        newPromotion.barAddress = bar.address;
         // save new promotion to database
         newPromotion.save(function(err, promo) {
             if (err) {
