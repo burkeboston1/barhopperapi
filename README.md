@@ -6,13 +6,11 @@ The base URL for our API is `https://barhopperapi.herokuapp.com/api`
 
 You should set `Content-Type` to `application/x-www-form-urlencoded`. 
 
-## Features
+## Endpoints
 
-*Signup*
+**[POST]** `/api/signup`
 
-Sign users up by sending a POST request to `https://barhopperapi.herokuapp.com/api/signup`.
-
-The body of this request should contain the following key-value pairs: 
+Sign up a user by sending a request with the body: 
 
 ```
 {
@@ -40,15 +38,20 @@ When the user signs out, simply delete the token from memeory on the client-side
 
 ---
 
-*Login*
+**[POST]** `/api/authenticate`
 
-To implement user login, send a POST request `https://barhopperapi.herokuapp.com/api/authenticate` with the email and password in the request body. You'll get the same response from the API as sign up but with the message `User signed in. Here's a token.`. 
+Send the request with the body: 
+
+```
+{
+  email: <user email>, 
+  password: <plan-text password>
+}
+```
 
 ---
 
-*View Promotions by Location*
-
-`/api/promotions/:location`
+**[GET]** `/api/promotions/:location`
 
 The location should be of the form `[<longitude>, <latitude>]`. Returns a JSON object called `results` with an array of promotions. 
 
