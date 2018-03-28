@@ -4,13 +4,13 @@ REST API that serves BarHopper web and mobile apps
 
 The base URL for our API is `https://barhopperapi.herokuapp.com/api`
 
+You should set `Content-Type` to `application/x-www-form-urlencoded`. 
+
 ## Features
 
 *Signup*
 
 Sign users up by sending a POST request to `https://barhopperapi.herokuapp.com/api/signup`.
-
-You should set `Content-Type` to `application/x-www-form-urlencoded`. 
 
 The body of this request should contain the following key-value pairs: 
 
@@ -38,9 +38,22 @@ User apps will need to save this token for as long as the user is signed-in. For
 
 When the user signs out, simply delete the token from memeory on the client-side. 
 
+---
 
 *Login*
 
 To implement user login, send a POST request `https://barhopperapi.herokuapp.com/api/authenticate` with the email and password in the request body. You'll get the same response from the API as sign up but with the message `User signed in. Here's a token.`. 
 
+---
 
+*View Promotions by Location*
+
+`/api/promotions/:location`
+
+The location should be of the form `[<longitude>, <latitude>]`. Returns a JSON object called `results` with an array of promotions. 
+
+Example response: 
+
+```
+
+```
