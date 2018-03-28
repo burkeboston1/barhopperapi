@@ -96,7 +96,7 @@ function createUser(userInfo, callback) {
 *
 * Create barInfo in database then exec callback.
 */
-function createBar(barInfo, callback) {
+function createBar(barInfo, user_id, callback) {
     // get coordinates from address if not already provided
     var maps_url = 'https://maps.googleapis.com/maps/api/geocode/json?key='
         + process.env.MAPS_API_KEY          // Google Maps API key
@@ -122,7 +122,12 @@ function createBar(barInfo, callback) {
                 callback(null);
                 return;
             }
-            callback(bar);
+            User.findOneAndUpdate({'_id' : user_id}, { $set: { 'bar_id':  bar._id} }, function(err, user) {
+                if (err) {
+                    console.log('Unable to find and update Bar Admin.');
+                }
+                callback(bar);
+            });
         });
     });
 }
