@@ -209,6 +209,22 @@ function findPromotionsByLocation(loc, callback) {
              });
 }
 
+/**
+* findPromotionsByBar()
+*
+* Find all promotions offered by a given bar.
+*/
+function findPromotionsByBar(bar_id, callback) {
+    Promotion.find({ 'bar_id': bar_id }, function (err, promotions) {
+        if (err) {
+            console.log('Error retrieving promotions by bar_id.');
+            callback(null);
+            return;
+        }
+        callback(promotions);
+    });
+}
+
 // -----------------------------------------------------------------------------
 // Helper methods for this file
 function httpGetAsync(theUrl, callback) {
@@ -231,4 +247,5 @@ module.exports = {
     'createPromotion' : createPromotion,
     'findUserByEmail': findUserByEmail,
     'findPromotionsByLocation' : findPromotionsByLocation,
+    'findPromotionsByBar' : findPromotionsByBar,
 };

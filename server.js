@@ -116,13 +116,26 @@ router.post('/authenticate', (req, res) => {
 });
 
 /**
- * /api/promotions/:location
+ * /api/promotions/loc/:location
  *
  * Gets all promotions within a radius around the given location ([lng, lat]).
  */
-router.get('/promotions/:location', (req, res) => {
+router.get('/promotions/loc/:location', (req, res) => {
 	var coords = JSON.parse(req.params.location);
 	dbWrapper.findPromotionsByLocation(coords, (promos) => {
+		res.status(200).json({success: true,
+			message: 'Here\'s some promotions',
+			results: promos});
+	});
+});
+
+/**
+ * /api/promotions/bar/:bar_id
+ *
+ * Gets all promotions associated with a given bar_id.
+ */
+router.get('/promotions/bar/:bar_id', (req, res) => {
+	dbWrapper.findPromotionsByBar(req.params.bar_id, (promos) => {
 		res.status(200).json({success: true,
 			message: 'Here\'s some promotions',
 			results: promos});
