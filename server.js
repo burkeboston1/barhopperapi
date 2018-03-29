@@ -129,9 +129,10 @@ router.get('/bars/:bar_id', (req, res) => {
 		} else {
 			res.status(200).json({success: true,
 				message: 'Here\'s a bar.',
-				bar: barObj});
+				bar: barObj
 			});
 		}
+	});
 });
 
 /**
