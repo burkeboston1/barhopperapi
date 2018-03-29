@@ -14,6 +14,8 @@ var promotionSchema   = new Schema({
     name: String,
     description: String,
     bar_id: { type: Schema.Types.ObjectId, ref: 'Bar'},
+    barName: String,
+    barAddress: String,
     upvotes: { type: Number, default: 0 },
     startDate: Date,
     endDate: Date,
