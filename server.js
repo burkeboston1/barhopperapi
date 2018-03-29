@@ -57,7 +57,7 @@ router.get('/', (req, res) => {
  * and returns a token upon success.
  */
 router.post('/signup', (req, res) => {
-	req.body.admin = req.body.admin == 'true';
+	req.body.admin = req.body.admin == 'true' || req.body.admin;
 	dbWrapper.createUser(req.body, (user) => {
 		if (!user) {
 			res.status(400).json({
