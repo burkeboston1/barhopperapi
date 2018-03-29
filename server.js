@@ -122,10 +122,16 @@ router.post('/authenticate', (req, res) => {
  */
 router.get('/bars/:bar_id', (req, res) => {
 	dbWrapper.findBar(req.params.bar_id, (barObj) => {
-		res.status(200).json({success: true,
-			message: 'Here\'s a bar.',
-			bar: barObj});
-	});
+		if (!barObj) {
+			res.status(403).json({success: false,
+				message: 'Failed to retrieve a bar matching the given bar_id.',
+			});
+		} else {
+			res.status(200).json({success: true,
+				message: 'Here\'s a bar.',
+				bar: barObj});
+			});
+		}
 });
 
 /**
