@@ -132,6 +132,21 @@ function createBar(barInfo, user_id, callback) {
 }
 
 /**
+* findBar()
+*
+* Find bar associated with a given bar_id.
+*/
+function findBar(bar_id, callback) {
+    Bar.findOne({ '_id': bar_id }, function (err, bar) {
+        if (err) {
+            callback(null);
+            return;
+        }
+        callback(bar);
+    });
+}
+
+/**
 * findUserByEmail()
 *
 * Searches user collection in db for user with matching email address.
@@ -245,6 +260,7 @@ module.exports = {
     'createUser' : createUser,
     'createPromotion' : createPromotion,
     'findUserByEmail': findUserByEmail,
+    'findBar' : findBar,
     'findPromotionsByLocation' : findPromotionsByLocation,
     'findPromotionsByBar' : findPromotionsByBar,
 };

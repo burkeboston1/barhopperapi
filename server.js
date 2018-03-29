@@ -116,6 +116,19 @@ router.post('/authenticate', (req, res) => {
 });
 
 /**
+ * /api/bars/:bar_id
+ *
+ * Gets the bar object associated with a given bar_id.
+ */
+router.get('/bars/:bar_id', (req, res) => {
+	dbWrapper.findBar(req.params.bar_id, (barObj) => {
+		res.status(200).json({success: true,
+			message: 'Here\'s a bar.',
+			bar: barObj});
+	});
+});
+
+/**
  * /api/promotions/loc/:location
  *
  * Gets all promotions within a radius around the given location ([lng, lat]).
