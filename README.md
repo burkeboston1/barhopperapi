@@ -123,6 +123,7 @@ Example response:
 }
 ```
 
+---
 
 **[GET]** `/api/promotions/bar/:location`
 
