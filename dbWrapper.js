@@ -41,7 +41,6 @@ mongoose.connect(barHopperMongoClusterUrl).then(
 */
 function createUser(userInfo, callback) {
     // build user from userInfo
-    console.log(userInfo);
     var newUser = User({
         name: userInfo.name,
         email: userInfo.email,
