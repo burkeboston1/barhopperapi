@@ -17,6 +17,12 @@ var promotionSchema   = new Schema({
     barName: String,
     barAddress: String,
     upvotes: { type: Number, default: 0 },
+    recurring: { type: Boolean, default: false },
+    recurrence: {
+        daysOfWeek: String,
+        startTime: String,
+        endTime: String
+    },
     startDate: Date,
     endDate: Date,
     location: {

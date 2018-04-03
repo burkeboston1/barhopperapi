@@ -150,6 +150,20 @@ router.get('/promotions/loc/:location', (req, res) => {
 });
 
 /**
+ * /api/bars/loc/:location
+ *
+ * Gets all bars within a radius around the given location ([lng, lat]).
+ */
+router.get('/bars/loc/:location', (req, res) => {
+	var coords = JSON.parse(req.params.location);
+	dbWrapper.findBarsByLocation(coords, (bars) => {
+		res.status(200).json({success: true,
+			message: 'Here\'s some bars.',
+			results: bars});
+	});
+});
+
+/**
  * /api/promotions/bar/:bar_id
  *
  * Gets all promotions associated with a given bar_id.
