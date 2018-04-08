@@ -175,6 +175,12 @@ function createPromotion(promoInfo, bar_id, callback) {
         barName: null,
         barAddress: null,
         upvotes: 0,
+        recurring: promoInfo.recurring,
+        recurrence: {
+            daysOfWeek: null,
+            startTime: null,
+            endTime: null
+        },
         startDate: new Date(promoInfo.startDate),
         endDate: new Date(promoInfo.endDate),
         location: {
@@ -182,6 +188,12 @@ function createPromotion(promoInfo, bar_id, callback) {
             coordinates: null,
         }
     });
+
+    if (promoInfo.recurring || promoInfo.recurring == 'true') {
+        newPromotion.recurrence.daysOfWeek = promoInfo.daysOfWeek;
+        newPromotion.recurrence.startTime = promoInfo.startTime;
+        newPromotion.recurrence.endTime = promoInfo.startTime;
+    }
     // find the associated bar so that promo's location can be set
     Bar.findOne({ '_id': bar_id }, function (err, bar) {
         if (err) {
@@ -235,6 +247,24 @@ function findPromotionsByLocation(loc, callback) {
 }
 
 /**
+* findBarsByLocation()
+*
+* Uses MongoDB Geonear functionality to find bars near a given location.
+*/
+function findBarsByLocation(loc, callback) {
+    Bar.where('location')
+             .near({ center: { type: 'Point', coordinates: loc }, maxDistance: 1000, spherical: true })
+             .exec(function(err, bars) {
+                 if (err) {
+                     console.log('Error retrieving bars.');
+                     callback(null);
+                     return;
+                 }
+                 callback(bars);
+             });
+}
+
+/**
 * findPromotionsByBar()
 *
 * Find all promotions offered by a given bar.
@@ -273,5 +303,6 @@ module.exports = {
     'findUserByEmail': findUserByEmail,
     'findBar' : findBar,
     'findPromotionsByLocation' : findPromotionsByLocation,
+    'findBarsByLocation' : findBarsByLocation,
     'findPromotionsByBar' : findPromotionsByBar,
 };
