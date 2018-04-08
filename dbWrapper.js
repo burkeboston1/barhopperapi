@@ -300,6 +300,7 @@ module.exports = {
     'createBar' : createBar,
     'createUser' : createUser,
     'createPromotion' : createPromotion,
+    'deletePromotion' : deletePromotion,
     'findUserByEmail': findUserByEmail,
     'findBar' : findBar,
     'findPromotionsByLocation' : findPromotionsByLocation,

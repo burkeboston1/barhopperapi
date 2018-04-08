@@ -254,7 +254,7 @@ router.post('/newpromo', (req, res) =>{
  *
  * Delete the promotion with the promo_id.
  */
-router.delete('/promotion/:promo_id', (req, res) => {
+router.delete('/promotions/:promo_id', (req, res) => {
 	if (!req.decoded.admin) {
 		res.status(403).json({success: false, message: 'User not authorized to create promotion.'})
 	} else {
