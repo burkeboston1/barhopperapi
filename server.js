@@ -234,7 +234,24 @@ router.post('/newpromo', (req, res) =>{
  	}
 });
 
-
+/**
+ * /api/promotion/:promo_id
+ *
+ * Delete the promotion with the promo_id.
+ */
+router.delete('/promotion/:promo_id', (req, res) => {
+	if (!req.decoded.admin) {
+		res.status(403).json({success: false, message: 'User not authorized to create promotion.'})
+	} else {
+		dbWrapper.deletePromotion(req.params.promo_id, (err) => {
+			if (err) {
+				res.status(400).json({success: false, message: 'Promotion does not exist.'});
+			} else {
+				res.status(200).json({success: true, message: 'Promotion deleted.'});
+			}
+		})
+	}
+})
 
 
 // -----------------------------------------------------------------------------

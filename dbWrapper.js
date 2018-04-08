@@ -206,6 +206,17 @@ function createPromotion(promoInfo, bar_id, callback) {
 }
 
 /**
+ * deletePromotion()
+ *
+ * Deletes the promotion specified by promo_id.
+ */
+function deletePromotion(promo_id, callback) {
+    Promotion.deleteOne({ '_id': promo_id }, (err) => {
+        callback(err);
+    })
+}
+
+/**
 * findPromotionsByLocation()
 *
 * Uses MongoDB Geonear functionality to find promotions near a given location.
