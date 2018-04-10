@@ -160,7 +160,7 @@ Example response:
 ```
 ---
 
-**[GET]** `/api/promotions/bar/:location`
+**[GET]** `/api/bars/loc/:location`
 
 Returns a JSON object called `results` with an array of bars near the coordinates given. 
 
