@@ -158,3 +158,9 @@ Example response:
     ]
 }
 ```
+---
+
+**[GET]** `/api/promotions/bar/:location`
+
+Returns a JSON object called `results` with an array of bars near the coordinates given. 
+
