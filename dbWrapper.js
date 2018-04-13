@@ -35,6 +35,24 @@ mongoose.connect(barHopperMongoClusterUrl).then(
 // Helpers
 
 /**
+ * updateUser()
+ * 
+ * Update name or password (or both) of user specified by user_id. 
+ */
+function updateUser(user_id, userInfo, callback) {
+    if (!userInfo.name) {
+        var update = {'password': hash.generate(userInfo.password)};
+    } else if (!userInfo.password) {
+        var update = {'name': userInfo.name};
+    } else {
+        var update = {'name': userInfo.name, 'password': hash.generate(userInfo.password)};
+    }
+    User.findOneAndUpdate({ '_id': user_id }, update, function (err, user) {
+        callback(err);
+    })
+}
+
+/**
 * createUser()
 *
 * Create userInfo in database then exec callback
@@ -306,4 +324,5 @@ module.exports = {
     'findPromotionsByLocation' : findPromotionsByLocation,
     'findBarsByLocation' : findBarsByLocation,
     'findPromotionsByBar' : findPromotionsByBar,
+    'updateUser' : updateUser
 };

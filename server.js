@@ -208,6 +208,21 @@ router.use((req, res, next) => {
 });
 
 /**
+ * [PATCH] /api/users/:user_id
+ * 
+ * Update the user specified by user_id with new password or name or both. 
+ */
+router.patch('/users/:user_id', (req, res) => {
+	dbWrapper.updateUser(req.params.user_id, req.body, (err) => {
+		if (err) {
+			res.status(400).json({success: false, message: 'Failed to update user.'});
+		} else {
+			res.status(200).json({success: true, message: 'User info updated.'});
+		}
+	})
+})
+
+/**
  * /api/newbar
  *
  * Create new bar with info in req.body and map to user found in token payload.
