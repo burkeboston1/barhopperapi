@@ -110,6 +110,7 @@ router.post('/authenticate', (req, res) => {
 				success: true,
 				message: 'User signed in. Here\'s a token.',
 				token: token,
+				user_id: user._id,
 				desc_id: desc_id});
 		}
 	})
