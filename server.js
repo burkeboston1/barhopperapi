@@ -117,6 +117,59 @@ router.post('/authenticate', (req, res) => {
 });
 
 /**
+ * /api/verify
+ * 
+ * Attemps to authenticate an unverified bar manager user using req.body.email 
+ * and req.body.password. On success, updates the returned user object with new
+ * name and password. 
+ */
+router.post('/verify', (req, res) => { 
+	dbWrapper.findUserByEmail(req.body.email, (user) => {
+		if (!user) {
+			res.status(400).json({
+				success: false,
+				message: 'Verification failed. User not found.'});
+		} else if (!user.admin) {
+			res.status(403).json({
+				success: false,
+				message: 'Verification failed. User not authorized.'});
+		} else if (user.verified) {
+			res.status(403).json({
+				success: false,
+				message: 'Verification failed. User already verified.'});
+		} else if (!hash.verify(req.body.tempPassword, user.password)) {
+			res.status(400).json({
+				success: false,
+				message: 'Verification failed. Wrong temporary password.'});
+		} else {
+			dbWrapper.updateUser(user._id, req.body, (err) => {
+				if (err) {
+					res.status(400).json({
+						success: false, 
+						message: 'Verification failed. Failed to update user info.'
+					});
+				} else {
+					const payload = {
+						user_id: user._id,
+						admin: user.admin
+					};
+					var token = jwt.sign(payload, process.env.SECRET, {
+						expiresIn: 1440 // expires in 24 hours
+					});
+					var desc_id = user.admin ? user.bar_id : user.patron_id // reference to corresponding patron/bar
+					res.status(200).json({
+						success: true,
+						message: 'User verified. Here\'s a token.',
+						token: token,
+						user_id: user._id,
+						desc_id: desc_id});
+				}
+			});
+		}
+	})
+})
+
+/**
  * /api/bars/:bar_id
  *
  * Gets the bar object associated with a given bar_id.
@@ -195,7 +248,7 @@ router.use((req, res, next) => {
 	    // verify secret and checks exp
 	    jwt.verify(token, process.env.SECRET, function(err, decoded) {
 	     	if (err) {
-	        	return res.json({ success: false, message: 'Failed to authenticate token.' });
+	        	return res.status(401).json({ success: false, message: 'Failed to authenticate token.' });
 	      	} else {
 	        	// if everything is good, save to request for use in other routes
 	        	req.decoded = decoded;
@@ -204,24 +257,9 @@ router.use((req, res, next) => {
 	    });
   	} else {
 	    // return error if no token found in req
-	    return res.status(403).json({success: false, message: 'No token provided.'});
+	    return res.status(401).json({success: false, message: 'No token provided.'});
   	}
 });
-
-/**
- * [PATCH] /api/users/:user_id
- * 
- * Update the user specified by user_id with new password or name or both. 
- */
-router.patch('/users/:user_id', (req, res) => {
-	dbWrapper.updateUser(req.params.user_id, req.body, (err) => {
-		if (err) {
-			res.status(400).json({success: false, message: 'Failed to update user.'});
-		} else {
-			res.status(200).json({success: true, message: 'User info updated.'});
-		}
-	})
-})
 
 /**
  * /api/newbar

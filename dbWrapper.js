@@ -40,13 +40,11 @@ mongoose.connect(barHopperMongoClusterUrl).then(
  * Update name or password (or both) of user specified by user_id. 
  */
 function updateUser(user_id, userInfo, callback) {
-    if (!userInfo.name) {
-        var update = {'password': hash.generate(userInfo.password)};
-    } else if (!userInfo.password) {
-        var update = {'name': userInfo.name};
-    } else {
-        var update = {'name': userInfo.name, 'password': hash.generate(userInfo.password)};
-    }
+    var update = {
+        password: hash.generate(userInfo.password), 
+        name: userInfo.name, 
+        verify: true
+    };
     User.findOneAndUpdate({ '_id': user_id }, update, function (err, user) {
         callback(err);
     })

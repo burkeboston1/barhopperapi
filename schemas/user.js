@@ -15,6 +15,7 @@ var userSchema   = new Schema({
     email: { type: String, unique: true },
     password: {type: String },
     admin: { type: Boolean },
+    verified: { type: Boolean, default: false },
     patron_id: { type: Schema.Types.ObjectId, ref: 'Patron' },
     bar_id: { type: Schema.Types.ObjectId, ref: 'Bar' }
 });
