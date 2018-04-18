@@ -305,6 +305,26 @@ router.post('/newpromo', (req, res) =>{
 
 /**
  * /api/promotion/:promo_id
+ * 
+ * Update promotion with promo_id with new info in req.body.
+ */
+router.patch('/promotions/:promo_id', (req, res) => {
+	if (!req.decoded.admin) {
+		res.status(403).json({success: false, message: 'User not authorized to edit promotion.'})
+	} else {
+		dbWrapper.updatePromotion(req.params.promo_id, req.body, (err, promotion) => {
+			if (err){
+				console.log(err);
+				res.status(400).json({success: false, message: 'Promotion does not exist.'});
+			} else {
+				res.status(200).json({success: true, message: 'Promotion updated.', promotion: promotion});
+			}
+		})
+	}
+})
+
+/**
+ * /api/promotion/:promo_id
  *
  * Delete the promotion with the promo_id.
  */

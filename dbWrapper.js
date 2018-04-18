@@ -193,9 +193,9 @@ function createPromotion(promoInfo, bar_id, callback) {
         upvotes: 0,
         recurring: promoInfo.recurring,
         recurrence: {
-            daysOfWeek: null,
-            startTime: null,
-            endTime: null
+            daysOfWeek: promoInfo.daysOfWeek,
+            startTime: promoInfo.startTime,
+            endTime: promoInfo.endTime
         },
         startDate: new Date(promoInfo.startDate),
         endDate: new Date(promoInfo.endDate),
@@ -231,6 +231,23 @@ function createPromotion(promoInfo, bar_id, callback) {
             callback(newPromotion);
         });
     });
+}
+
+/**
+ * updatePromotion() 
+ * 
+ * Updates the promotion specified by promo_id with info in promo
+ */
+function updatePromotion(promo_id, promo, callback) {
+    var update = {
+        'name': promo.name, 
+        'description': promo.description, 
+        'startDate': new Date(promo.startDate), 
+        'endDate': new Date(promo.endDate)
+    }
+    Promotion.findOneAndUpdate({ '_id': promo_id }, update, (promotion, err) => {
+        callback(promotion, err);
+    })
 }
 
 /**
@@ -316,6 +333,7 @@ module.exports = {
     'createBar' : createBar,
     'createUser' : createUser,
     'createPromotion' : createPromotion,
+    'updatePromotion' : updatePromotion,
     'deletePromotion' : deletePromotion,
     'findUserByEmail': findUserByEmail,
     'findBar' : findBar,

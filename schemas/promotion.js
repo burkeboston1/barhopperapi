@@ -19,9 +19,9 @@ var promotionSchema   = new Schema({
     upvotes: { type: Number, default: 0 },
     recurring: { type: Boolean, default: false },
     recurrence: {
-        daysOfWeek: String,
-        startTime: String,
-        endTime: String
+        daysOfWeek: [Boolean],
+        startTime: Date,
+        endTime: Date
     },
     startDate: Date,
     endDate: Date,
