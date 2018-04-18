@@ -125,7 +125,7 @@ Example response:
 
 ---
 
-**[GET]** `/api/promotions/bar/:location`
+**[GET]** `/api/promotions/bar/:bar_id`
 
 Returns a JSON object called `results` with an array of promotions associated with the given bar_id. 
 
