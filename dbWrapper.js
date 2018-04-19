@@ -194,8 +194,8 @@ function createPromotion(promoInfo, bar_id, callback) {
         recurring: promoInfo.recurring,
         recurrence: {
             daysOfWeek: promoInfo.daysOfWeek,
-            startTime: promoInfo.startTime,
-            endTime: promoInfo.endTime
+            startTime: new Date(promoInfo.startTime),
+            endTime: new Date(promoInfo.endTime)
         },
         startDate: new Date(promoInfo.startDate),
         endDate: new Date(promoInfo.endDate),
@@ -205,11 +205,6 @@ function createPromotion(promoInfo, bar_id, callback) {
         }
     });
 
-    if (promoInfo.recurring || promoInfo.recurring == 'true') {
-        newPromotion.recurrence.daysOfWeek = promoInfo.daysOfWeek;
-        newPromotion.recurrence.startTime = promoInfo.startTime;
-        newPromotion.recurrence.endTime = promoInfo.startTime;
-    }
     // find the associated bar so that promo's location can be set
     Bar.findOne({ '_id': bar_id }, function (err, bar) {
         if (err) {
