@@ -18,6 +18,7 @@ var User      = require('./schemas/user');
 var Patron    = require('./schemas/patron');
 var Bar       = require('./schemas/bar');
 var Promotion = require('./schemas/promotion');
+var Image     = require('./schemas/image');
 
 // BarHopper MongoDB cluster hosted by mlab
 var barHopperMongoClusterUrl = process.env.MONGODB_URI;
@@ -43,7 +44,7 @@ function updateUser(user_id, userInfo, callback) {
     var update = {
         password: hash.generate(userInfo.password), 
         name: userInfo.name, 
-        verify: true
+        verified: true
     };
     User.findOneAndUpdate({ '_id': user_id }, update, function (err, user) {
         callback(err);
@@ -144,6 +145,24 @@ function createBar(barInfo, user_id, callback) {
                 callback(bar);
             });
         });
+    });
+}
+
+/**
+ * uploadImage()
+ * 
+ * Creates an image in the images collection and associates it with the bar. 
+ */
+function uploadImage(bar_id, type, contentType, callback) {
+    var newImage = new Image({
+        type: type, 
+        img: {
+            data: null, 
+            contentType: contentType
+        }
+    });
+    newImage.save((err, image) => {
+        callback(err, image);
     });
 }
 
@@ -328,6 +347,7 @@ module.exports = {
     'createBar' : createBar,
     'createUser' : createUser,
     'createPromotion' : createPromotion,
+    'uploadImage': uploadImage,
     'updatePromotion' : updatePromotion,
     'deletePromotion' : deletePromotion,
     'findUserByEmail': findUserByEmail,

@@ -303,6 +303,18 @@ router.post('/newpromo', (req, res) =>{
  	}
 });
 
+router.post('/images/storefront/:bar_id', (req, res) => {
+	dbWrapper.uploadImage(req.params.bar_id, 'storefront', req.body.contentType, () => {
+		res.status(200).json({message: "Well, you hit the route but nothing happened because we haven't implemented this yet."});
+	});
+});
+
+router.post('/images/logo/:bar_id', (req, res) => {
+	dbWrapper.uploadImage(req.params.bar_id, 'logo', req.body.contentType, () => {
+		res.status(200).json({message: "Well, you hit the route but nothing happened because we haven't implemented this yet."});
+	});
+});
+
 /**
  * /api/promotion/:promo_id
  * 
