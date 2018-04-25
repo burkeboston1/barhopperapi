@@ -63,7 +63,7 @@ router.get('/', (req, res) => {
  */
 router.post('/signup', (req, res) => {
 	req.body.admin = req.body.admin == 'true' || req.body.admin;
-	dbWrapper.createUser(req.body, (user) => {
+	dbWrapper.createUser(req.body, (user, patron) => {
 		if (!user) {
 			res.status(400).json({
 				success: false,
@@ -76,12 +76,18 @@ router.post('/signup', (req, res) => {
 			var token = jwt.sign(payload, process.env.SECRET, {
 				expiresIn: 1440 // expires in 24 hours
 			});
-			var desc_id = user.admin ? user.bar_id : user.patron_id // reference to corresponding patron/bar
-			res.status(201).json({
+
+			var resJson = {
 				success: true,
 				message: 'User created. Here\'s a token.',
 				token: token,
-				desc_id : desc_id});
+				desc_id : desc_id};
+
+			if (patron) {
+				resJson.patron = patron;
+			}
+
+			res.status(201).json(resJson);
 		}
 	});
 })
@@ -108,15 +114,24 @@ router.post('/authenticate', (req, res) => {
 				admin: user.admin
 			};
 			var token = jwt.sign(payload, process.env.SECRET, {
-				expiresIn: 1440 // expires in 24 hours
+				expiresIn: 86400 // expires in 24 hours
 			});
-			var desc_id = user.admin ? user.bar_id : user.patron_id // reference to corresponding patron/bar
-			res.status(200).json({
+
+			var resJson = {
 				success: true,
 				message: 'User signed in. Here\'s a token.',
-				token: token,
-				user_id: user._id,
-				desc_id: desc_id});
+				token: token, 
+			}
+
+			if (user.admin) {
+				dbWrapper.findBar(user.bar_id, (bar) => {
+					resJson.bar = bar;
+					res.status(200).json(resJson);
+				})
+			} else {
+				// Return the patron
+				res.status(200).json(resJson);
+			}
 		}
 	})
 });
@@ -165,9 +180,7 @@ router.post('/verify', (req, res) => {
 					res.status(200).json({
 						success: true,
 						message: 'User verified. Here\'s a token.',
-						token: token,
-						user_id: user._id,
-						desc_id: desc_id});
+						token: token});
 				}
 			});
 		}
@@ -206,10 +219,19 @@ router.get('/bars/:bar_id', (req, res) => {
  */
 router.get('/bars/loc/:location', (req, res) => {
 	var coords = JSON.parse(req.params.location);
-	dbWrapper.findBarsByLocation(coords, (bars) => {
-		res.status(200).json({success: true,
-			message: 'Here\'s some bars.',
-			results: bars});
+	dbWrapper.findBarsByLocation(coords, (err, bars) => {
+		if (err) {
+			res.status(400).json({
+				success: false, 
+				message: 'Bad request'
+			})
+		} else {
+			res.status(200).json({
+				success: true,
+				message: 'Here\'s some bars.',
+				results: bars
+			});
+		}
 	});
 });
 
@@ -225,10 +247,18 @@ router.get('/bars/loc/:location', (req, res) => {
  */
 router.get('/promotions/loc/:location', (req, res) => {
 	var coords = JSON.parse(req.params.location);
-	dbWrapper.findPromotionsByLocation(coords, (promos) => {
-		res.status(200).json({success: true,
-			message: 'Here\'s some promotions',
-			results: promos});
+	dbWrapper.findPromotionsByLocation(coords, (err, promos) => {
+		if (err) {
+			res.status(400).json({
+				success: false, 
+				message: 'Bad request'
+			})
+		} else {
+			res.status(200).json({success: true,
+				message: 'Here\'s some promotions',
+				results: promos
+			});
+		}
 	});
 });
 
@@ -238,27 +268,20 @@ router.get('/promotions/loc/:location', (req, res) => {
  * Gets all promotions associated with a given bar_id.
  */
 router.get('/promotions/bar/:bar_id', (req, res) => {
-	dbWrapper.findPromotionsByBar(req.params.bar_id, (promos) => {
-		res.status(200).json({success: true,
-			message: 'Here\'s some promotions',
-			results: promos});
+	dbWrapper.findPromotionsByBar(req.params.bar_id, (err, promos) => {
+		if (err) {
+			res.status(400).json({
+				success: false, 
+				message: 'Failed to fetch promotions. Bar not found.'
+			})
+		} else {
+			res.status(200).json({success: true,
+				message: 'Here\'s some promotions',
+				results: promos
+			});
+		}
 	});
 });
-
-
-// -----------------------------------------------------------------------------
-// IMAGES Collection (Protected)
-// -----------------------------------------------------------------------------
-
-router.get('/images/:image_id', (req, res) => {
-	dbWrapper.getImage(req.params.image_id, (err, image) => {
-		if (err) {
-			res.status(400).json({success: false, message: 'Logo does not exist.'});
-		} else {
-			res.status(200).contentType(image.img.contentType).send(image.img.data);
-		}
-	})
-})
 
 
 // -----------------------------------------------------------------------------
@@ -313,7 +336,7 @@ router.post('/newbar', (req, res) => {
 				 // TODO: handle different errors
 				 res.status(400).json({success: false, message: 'Failed to create bar.'});
 			 } else {
-			 	 res.status(201).json({success: true, message: 'Bar created.', bar_id: bar._id});
+			 	 res.status(201).json({success: true, message: 'Bar created.', bar: bar});
 		 	 }
 		 });
 	 }

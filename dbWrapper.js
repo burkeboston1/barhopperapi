@@ -52,7 +52,7 @@ function updateUser(user_id, userInfo, callback) {
         verified: true
     };
     User.findOneAndUpdate({ '_id': user_id }, update, function (err, user) {
-        callback(err);
+        callback(err, user);
     })
 }
 
@@ -81,7 +81,7 @@ function createUser(userInfo, callback) {
         newPatron.save(function(err, patron){
             if (err) {
                 console.log('Failed to write new patron to DB.\n' + err);
-                callback(null);
+                callback(null, null);
                 return;
             }
 
@@ -92,10 +92,10 @@ function createUser(userInfo, callback) {
             newUser.save(function(err, user){
                 if(err) {
                     console.log('Failed to write new user to DB.\n' + err);
-                    callback(null);
+                    callback(null, null);
                     return;
                 }
-                callback(user);
+                callback(user, patron);
             });
         });
     } else {
@@ -107,7 +107,7 @@ function createUser(userInfo, callback) {
                 callback(null);
                 return;
             }
-            callback(user);
+            callback(user, null);
         });
     }
 }
@@ -123,7 +123,15 @@ function findUserByEmail(email, callback) {
             callback(null);
             return;
         }
-        callback(user);
+        if (user.admin) {
+            findBar(user.bar_id, (bar) => {
+                callback(user, bar);
+            });
+        } else {
+            Patron.findById({ '_id': user.patron_id }, (err, patron) => {
+                callback(user, patron);
+            })
+        }
     });
 }
 
@@ -202,10 +210,10 @@ function findBarsByLocation(loc, callback) {
              .exec(function(err, bars) {
                  if (err) {
                      console.log('Error retrieving bars.');
-                     callback(null);
+                     callback(err, null);
                      return;
                  }
-                 callback(bars);
+                 callback(null, bars);
              });
 }
 
@@ -304,10 +312,10 @@ function findPromotionsByLocation(loc, callback) {
              .exec(function(err, promos) {
                  if (err) {
                      console.log('Error retrieving promotions.');
-                     callback(null);
+                     callback(err, null);
                      return;
                  }
-                 callback(promos);
+                 callback(null, promos);
              });
 }
 
@@ -320,51 +328,10 @@ function findPromotionsByBar(bar_id, callback) {
     Promotion.find({ 'bar_id': bar_id }, function (err, promotions) {
         if (err) {
             console.log('Error retrieving promotions by bar_id.');
-            callback(null);
+            callback(err, null);
             return;
         }
-        callback(promotions);
-    });
-}
-
-
-// -----------------------------------------------------------------------------
-// IMAGES Collection
-// -----------------------------------------------------------------------------
-
-/**
- * getImage()
- * 
- * Returns the image matching image_id from the Images collection. 
- */
-function getImage(image_id, callback) {
-    Image.findById(image_id, (err, image) => {
-        callback(err, image);
-    });
-}
-
-/**
- * uploadImages()
- * 
- * Uploads the image and logo of a bar and passes both into callback.
- */
-function uploadImages(images, callback) {
-    var newImage = new Image({
-        img: {
-            data: images.image, 
-            contentType: images.imageType
-        }
-    });
-    var newLogo = new Image({
-        img: {
-            data: images.logo, 
-            contentType: images.logoType
-        }
-    })
-    newImage.save((err, image) => {
-        newLogo.save((err, logo) => {
-            callback(err, image, logo);
-        });
+        callback(null, promotions);
     });
 }
 
@@ -405,7 +372,5 @@ module.exports = {
     'findPromotionsByLocation' : findPromotionsByLocation,
     'findBarsByLocation' : findBarsByLocation,
     'findPromotionsByBar' : findPromotionsByBar,
-    'updateUser' : updateUser, 
-    'getImage': getImage, 
-    'uploadImages': uploadImages
+    'updateUser' : updateUser
 };
