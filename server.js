@@ -1,14 +1,17 @@
 /**
  * server.js
  *
- * Main server file for the BarHopper API
+ * Main server file for the BarHopper API. Defines routes for accessing
+ * documents in MongoDB collections and authentication. 
  *
  * BarHopper API
  * Boston Burke, Will Campbell
  */
 
 // -----------------------------------------------------------------------------
-// Config
+// CONFIG
+// -----------------------------------------------------------------------------
+
 require('dotenv').config();
 var express    = require('express');
 var app		   = express();
@@ -28,8 +31,10 @@ var router = express.Router();
 app.use(cors());
 app.options('*', cors());
 
+
 // -----------------------------------------------------------------------------
-// Open Routes
+// ROUTES
+// -----------------------------------------------------------------------------
 
 /**
  * Middleware to allow cross origin requests.
@@ -169,6 +174,11 @@ router.post('/verify', (req, res) => {
 	})
 })
 
+
+// -----------------------------------------------------------------------------
+// BARS Collection (Unprotected)
+// -----------------------------------------------------------------------------
+
 /**
  * /api/bars/:bar_id
  *
@@ -190,20 +200,6 @@ router.get('/bars/:bar_id', (req, res) => {
 });
 
 /**
- * /api/promotions/loc/:location
- *
- * Gets all promotions within a radius around the given location ([lng, lat]).
- */
-router.get('/promotions/loc/:location', (req, res) => {
-	var coords = JSON.parse(req.params.location);
-	dbWrapper.findPromotionsByLocation(coords, (promos) => {
-		res.status(200).json({success: true,
-			message: 'Here\'s some promotions',
-			results: promos});
-	});
-});
-
-/**
  * /api/bars/loc/:location
  *
  * Gets all bars within a radius around the given location ([lng, lat]).
@@ -214,6 +210,25 @@ router.get('/bars/loc/:location', (req, res) => {
 		res.status(200).json({success: true,
 			message: 'Here\'s some bars.',
 			results: bars});
+	});
+});
+
+
+// -----------------------------------------------------------------------------
+// PROMOTIONS Collection (Unprotected)
+// -----------------------------------------------------------------------------
+
+/**
+ * /api/promotions/loc/:location
+ *
+ * Gets all promotions within a radius around the given location ([lng, lat]).
+ */
+router.get('/promotions/loc/:location', (req, res) => {
+	var coords = JSON.parse(req.params.location);
+	dbWrapper.findPromotionsByLocation(coords, (promos) => {
+		res.status(200).json({success: true,
+			message: 'Here\'s some promotions',
+			results: promos});
 	});
 });
 
@@ -230,8 +245,25 @@ router.get('/promotions/bar/:bar_id', (req, res) => {
 	});
 });
 
+
 // -----------------------------------------------------------------------------
-// Protected Routes
+// IMAGES Collection (Protected)
+// -----------------------------------------------------------------------------
+
+router.get('/images/:image_id', (req, res) => {
+	dbWrapper.getImage(req.params.image_id, (err, image) => {
+		if (err) {
+			res.status(400).json({success: false, message: 'Logo does not exist.'});
+		} else {
+			res.status(200).contentType(image.img.contentType).send(image.img.data);
+		}
+	})
+})
+
+
+// -----------------------------------------------------------------------------
+// AUTHENTICATION MIDDLEWARE
+// -----------------------------------------------------------------------------
 
 /**
  * Middleware to protect subsequent routes.
@@ -261,6 +293,11 @@ router.use((req, res, next) => {
   	}
 });
 
+
+// -----------------------------------------------------------------------------
+// BARS Collection (Protected)
+// -----------------------------------------------------------------------------
+
 /**
  * /api/newbar
  *
@@ -268,11 +305,9 @@ router.use((req, res, next) => {
  */
 router.post('/newbar', (req, res) => {
 	 // check that user is admin
-	 console.log(req.decoded);
 	 if (!req.decoded.admin) {
 		 res.status(403).json({success: false, message: 'User not authorized to create bar.'});
 	 } else {
-		 // TODO: verify that bar manager is associated with bar they are trying to create
 		 dbWrapper.createBar(req.body, req.decoded.user_id, (bar, err) => {
 			 if (!bar) {
 				 // TODO: handle different errors
@@ -281,10 +316,15 @@ router.post('/newbar', (req, res) => {
 			 	 res.status(201).json({success: true, message: 'Bar created.', bar_id: bar._id});
 		 	 }
 		 });
- 	}
- })
+	 }
+});
 
-/**
+
+//-----------------------------------------------------------------------------
+// PROMOTIONS Collection (Protected)
+//-----------------------------------------------------------------------------
+
+ /**
 * /api/newpromo
 *
 * Create new promotion with info in req.body.
@@ -303,17 +343,6 @@ router.post('/newpromo', (req, res) =>{
  	}
 });
 
-router.post('/images/storefront/:bar_id', (req, res) => {
-	dbWrapper.uploadImage(req.params.bar_id, 'storefront', req.body.contentType, () => {
-		res.status(200).json({message: "Well, you hit the route but nothing happened because we haven't implemented this yet."});
-	});
-});
-
-router.post('/images/logo/:bar_id', (req, res) => {
-	dbWrapper.uploadImage(req.params.bar_id, 'logo', req.body.contentType, () => {
-		res.status(200).json({message: "Well, you hit the route but nothing happened because we haven't implemented this yet."});
-	});
-});
 
 /**
  * /api/promotion/:promo_id

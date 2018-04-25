@@ -1,39 +1,44 @@
 /**
 * dbWrapper.js
 *
-* Functions for interacting with BarHopper MongoDB
-* cluster using mongoose to facilitate object modeling.
+* Functions for interacting with BarHopper MongoDB cluster using mongoose to 
+* facilitate object modeling.
 *
 * BarHopper API
 * Boston Burke, Will Campbell
 */
 
-// Packages
-var mongoose = require('mongoose');
-var hash 	 = require('password-hash'); // for generating password hashes
-var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+// -----------------------------------------------------------------------------
+// CONFIG
+// -----------------------------------------------------------------------------
 
+var mongoose = require('mongoose');
+var hash 	 = require('password-hash'); 
+var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 // Mongoose models for our BarHopper entities
 var User      = require('./schemas/user');
 var Patron    = require('./schemas/patron');
 var Bar       = require('./schemas/bar');
 var Promotion = require('./schemas/promotion');
-var Image     = require('./schemas/image');
 
-// BarHopper MongoDB cluster hosted by mlab
+// BarHopper MongoDB connection URL
 var barHopperMongoClusterUrl = process.env.MONGODB_URI;
 
 // Connect to database
 mongoose.connect(barHopperMongoClusterUrl).then(
     () => {
-        /* ready to use */
+        // ready to use
         console.log('DB connection alive')
     },
-    err => { /* handle connection error */}
+    err => { 
+        // TODO: handle connection error
+    }
 );
 
+
 // -----------------------------------------------------------------------------
-// Helpers
+// USERS Collection
+// -----------------------------------------------------------------------------
 
 /**
  * updateUser()
@@ -108,6 +113,26 @@ function createUser(userInfo, callback) {
 }
 
 /**
+* findUserByEmail()
+*
+* Searches user collection in db for user with matching email address.
+*/
+function findUserByEmail(email, callback) {
+    User.findOne({ 'email': email }, function (err, user) {
+        if (err) {
+            callback(null);
+            return;
+        }
+        callback(user);
+    });
+}
+
+
+// -----------------------------------------------------------------------------
+// BARS Collection
+// -----------------------------------------------------------------------------
+
+/**
 * createBar()
 *
 * Create barInfo in database then exec callback.
@@ -118,6 +143,7 @@ function createBar(barInfo, user_id, callback) {
         + process.env.MAPS_API_KEY          // Google Maps API key
         + '&address=' + barInfo.address;     // address
     httpGetAsync(maps_url, function(res) {
+
         // get the coordinates from the first result
         res = JSON.parse(res);
         var newBar = new Bar({
@@ -128,7 +154,9 @@ function createBar(barInfo, user_id, callback) {
             location: {
                 type: 'Point',
                 coordinates: [res.results[0].geometry.location.lng, res.results[0].geometry.location.lat]
-            }
+            }, 
+            imageUrl: barInfo.imageUrl, 
+            logoUrl: barInfo.logoUrl
         });
 
         // save bar in db
@@ -149,24 +177,6 @@ function createBar(barInfo, user_id, callback) {
 }
 
 /**
- * uploadImage()
- * 
- * Creates an image in the images collection and associates it with the bar. 
- */
-function uploadImage(bar_id, type, contentType, callback) {
-    var newImage = new Image({
-        type: type, 
-        img: {
-            data: null, 
-            contentType: contentType
-        }
-    });
-    newImage.save((err, image) => {
-        callback(err, image);
-    });
-}
-
-/**
 * findBar()
 *
 * Find bar associated with a given bar_id.
@@ -182,19 +192,27 @@ function findBar(bar_id, callback) {
 }
 
 /**
-* findUserByEmail()
+* findBarsByLocation()
 *
-* Searches user collection in db for user with matching email address.
+* Uses MongoDB Geonear functionality to find bars near a given location.
 */
-function findUserByEmail(email, callback) {
-    User.findOne({ 'email': email }, function (err, user) {
-        if (err) {
-            callback(null);
-            return;
-        }
-        callback(user);
-    });
+function findBarsByLocation(loc, callback) {
+    Bar.where('location')
+             .near({ center: { type: 'Point', coordinates: loc }, maxDistance: 1000, spherical: true })
+             .exec(function(err, bars) {
+                 if (err) {
+                     console.log('Error retrieving bars.');
+                     callback(null);
+                     return;
+                 }
+                 callback(bars);
+             });
 }
+
+
+// -----------------------------------------------------------------------------
+// PROMOTIONS Collection
+// -----------------------------------------------------------------------------
 
 /**
 * createPromotion()
@@ -294,24 +312,6 @@ function findPromotionsByLocation(loc, callback) {
 }
 
 /**
-* findBarsByLocation()
-*
-* Uses MongoDB Geonear functionality to find bars near a given location.
-*/
-function findBarsByLocation(loc, callback) {
-    Bar.where('location')
-             .near({ center: { type: 'Point', coordinates: loc }, maxDistance: 1000, spherical: true })
-             .exec(function(err, bars) {
-                 if (err) {
-                     console.log('Error retrieving bars.');
-                     callback(null);
-                     return;
-                 }
-                 callback(bars);
-             });
-}
-
-/**
 * findPromotionsByBar()
 *
 * Find all promotions offered by a given bar.
@@ -327,8 +327,58 @@ function findPromotionsByBar(bar_id, callback) {
     });
 }
 
+
 // -----------------------------------------------------------------------------
-// Helper methods for this file
+// IMAGES Collection
+// -----------------------------------------------------------------------------
+
+/**
+ * getImage()
+ * 
+ * Returns the image matching image_id from the Images collection. 
+ */
+function getImage(image_id, callback) {
+    Image.findById(image_id, (err, image) => {
+        callback(err, image);
+    });
+}
+
+/**
+ * uploadImages()
+ * 
+ * Uploads the image and logo of a bar and passes both into callback.
+ */
+function uploadImages(images, callback) {
+    var newImage = new Image({
+        img: {
+            data: images.image, 
+            contentType: images.imageType
+        }
+    });
+    var newLogo = new Image({
+        img: {
+            data: images.logo, 
+            contentType: images.logoType
+        }
+    })
+    newImage.save((err, image) => {
+        newLogo.save((err, logo) => {
+            callback(err, image, logo);
+        });
+    });
+}
+
+
+// -----------------------------------------------------------------------------
+// NETWORK Helpers
+// -----------------------------------------------------------------------------
+
+/**
+ * httpGetAsync
+ * 
+ * Initiates an asyncronous HTTP request on theUrl and executes callback on 
+ * completion. 
+ */
 function httpGetAsync(theUrl, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
@@ -341,13 +391,13 @@ function httpGetAsync(theUrl, callback) {
 
 
 // -----------------------------------------------------------------------------
-// Exports
+// EXPORTS
+// -----------------------------------------------------------------------------
 
 module.exports = {
     'createBar' : createBar,
     'createUser' : createUser,
     'createPromotion' : createPromotion,
-    'uploadImage': uploadImage,
     'updatePromotion' : updatePromotion,
     'deletePromotion' : deletePromotion,
     'findUserByEmail': findUserByEmail,
@@ -355,5 +405,7 @@ module.exports = {
     'findPromotionsByLocation' : findPromotionsByLocation,
     'findBarsByLocation' : findBarsByLocation,
     'findPromotionsByBar' : findPromotionsByBar,
-    'updateUser' : updateUser
+    'updateUser' : updateUser, 
+    'getImage': getImage, 
+    'uploadImages': uploadImages
 };

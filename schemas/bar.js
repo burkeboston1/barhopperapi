@@ -18,7 +18,9 @@ var barSchema   = new Schema({
     location: {
         type: { type: String },
         coordinates: [Number] 
-    }
+    },
+    logoUrl: String, 
+    imageUrl: String
 });
 
 barSchema.index({ "location": "2dsphere" });
