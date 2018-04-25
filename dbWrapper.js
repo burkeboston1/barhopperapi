@@ -227,6 +227,7 @@ function createPromotion(promoInfo, bar_id, callback) {
         bar_id: bar_id,
         barName: null,
         barAddress: null,
+        barLogoUrl: null, 
         upvotes: 0,
         recurring: promoInfo.recurring,
         recurrence: {
@@ -252,6 +253,8 @@ function createPromotion(promoInfo, bar_id, callback) {
         newPromotion.location.coordinates = bar.location.coordinates;
         newPromotion.barName = bar.name;
         newPromotion.barAddress = bar.address;
+        newPromotion.barLogoUrl = bar.logoUrl;
+
         // save new promotion to database
         newPromotion.save(function(err, promo) {
             if (err) {
