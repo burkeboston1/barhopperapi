@@ -63,7 +63,7 @@ router.get('/', (req, res) => {
  */
 router.post('/signup', (req, res) => {
 	req.body.admin = req.body.admin == 'true' || req.body.admin;
-	dbWrapper.createUser(req.body, (user, patron) => {
+	dbWrapper.createUser(req.body, (user) => {
 		if (!user) {
 			res.status(400).json({
 				success: false,
@@ -74,7 +74,7 @@ router.post('/signup', (req, res) => {
 				admin: user.admin
 			};
 			var token = jwt.sign(payload, process.env.SECRET, {
-				expiresIn: 1440 // expires in 24 hours
+				expiresIn: 86400 // expires in 24 hours
 			});
 
 			var resJson = {
@@ -82,10 +82,6 @@ router.post('/signup', (req, res) => {
 				message: 'User created. Here\'s a token.',
 				token: token,
 				desc_id : desc_id};
-
-			if (patron) {
-				resJson.patron = patron;
-			}
 
 			res.status(201).json(resJson);
 		}
@@ -176,7 +172,6 @@ router.post('/verify', (req, res) => {
 					var token = jwt.sign(payload, process.env.SECRET, {
 						expiresIn: 1440 // expires in 24 hours
 					});
-					var desc_id = user.admin ? user.bar_id : user.patron_id // reference to corresponding patron/bar
 					res.status(200).json({
 						success: true,
 						message: 'User verified. Here\'s a token.',

@@ -122,16 +122,8 @@ function findUserByEmail(email, callback) {
         if (err) {
             callback(null);
             return;
-        }
-        if (user.admin) {
-            findBar(user.bar_id, (bar) => {
-                callback(user, bar);
-            });
-        } else {
-            Patron.findById({ '_id': user.patron_id }, (err, patron) => {
-                callback(user, patron);
-            })
-        }
+        } 
+        callback(user);
     });
 }
 
