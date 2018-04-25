@@ -77,13 +77,11 @@ router.post('/signup', (req, res) => {
 				expiresIn: 86400 // expires in 24 hours
 			});
 
-			var resJson = {
+			res.status(201).json({
 				success: true,
 				message: 'User created. Here\'s a token.',
-				token: token,
-				desc_id : desc_id};
-
-			res.status(201).json(resJson);
+				token: token
+			});
 		}
 	});
 })
@@ -170,7 +168,7 @@ router.post('/verify', (req, res) => {
 						admin: user.admin
 					};
 					var token = jwt.sign(payload, process.env.SECRET, {
-						expiresIn: 1440 // expires in 24 hours
+						expiresIn: 86400 // expires in 24 hours
 					});
 					res.status(200).json({
 						success: true,

@@ -81,7 +81,7 @@ function createUser(userInfo, callback) {
         newPatron.save(function(err, patron){
             if (err) {
                 console.log('Failed to write new patron to DB.\n' + err);
-                callback(null, null);
+                callback(null);
                 return;
             }
 
@@ -92,10 +92,10 @@ function createUser(userInfo, callback) {
             newUser.save(function(err, user){
                 if(err) {
                     console.log('Failed to write new user to DB.\n' + err);
-                    callback(null, null);
+                    callback(null);
                     return;
                 }
-                callback(user, patron);
+                callback(user);
             });
         });
     } else {
@@ -107,7 +107,7 @@ function createUser(userInfo, callback) {
                 callback(null);
                 return;
             }
-            callback(user, null);
+            callback(user);
         });
     }
 }
