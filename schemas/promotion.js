@@ -16,6 +16,7 @@ var promotionSchema   = new Schema({
     bar_id: { type: Schema.Types.ObjectId, ref: 'Bar'},
     barName: String,
     barAddress: String,
+    barLogoUrl: String, 
     upvotes: { type: Number, default: 0 },
     recurring: { type: Boolean, default: false },
     recurrence: {
