@@ -80,7 +80,8 @@ router.post('/signup', (req, res) => {
 			res.status(201).json({
 				success: true,
 				message: 'User created. Here\'s a token.',
-				token: token
+				token: token, 
+				desc_id: user.admin ? user.bar_id : user.patron_id
 			});
 		}
 	});
@@ -115,6 +116,7 @@ router.post('/authenticate', (req, res) => {
 				success: true,
 				message: 'User signed in. Here\'s a token.',
 				token: token, 
+				desc_id: user.admin ? user.bar_id : user.patron_id
 			}
 
 			if (user.admin) {
