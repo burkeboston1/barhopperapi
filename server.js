@@ -337,6 +337,29 @@ router.post('/newbar', (req, res) => {
 	 }
 });
 
+/**
+ * [PATCH] /api/bars/:bar_id
+ * 
+ * Updates the bar with bar_id with information in body
+ */
+router.patch('/bars/:bar_id', (req, res) => {
+	
+	dbWrapper.updateBar(req.params.bar_id, req.body, (err, bar) => {
+		if (err || !bar) {
+			res.status(400).json({
+				success: false, 
+				message: 'Failed to update bar.'
+			});
+		} else {
+			res.status(201).json({
+				success: true, 
+				message: 'Bar has been updated.', 
+				bar: bar
+			})
+		}
+	});
+});
+
 
 //-----------------------------------------------------------------------------
 // PROMOTIONS Collection (Protected)

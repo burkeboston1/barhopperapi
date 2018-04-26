@@ -177,6 +177,16 @@ function createBar(barInfo, user_id, callback) {
 }
 
 /**
+ * updateBar()
+ * 
+ * Updates the bar with bar_id with information in barInfo. 
+ */
+function updateBar(barId, barInfo, callback) {
+    var update = barInfo;
+    Bar.findOneAndUpdate({ '_id': barId }, update, callback);
+}
+
+/**
 * findBar()
 *
 * Find bar associated with a given bar_id.
@@ -367,5 +377,6 @@ module.exports = {
     'findPromotionsByLocation' : findPromotionsByLocation,
     'findBarsByLocation' : findBarsByLocation,
     'findPromotionsByBar' : findPromotionsByBar,
-    'updateUser' : updateUser
+    'updateUser' : updateUser, 
+    'updateBar' : updateBar
 };
